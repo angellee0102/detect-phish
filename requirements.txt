@@ -9,3 +9,6 @@ cloudpickle==1.2.2
 nltk==3.5
 wordninja==2.0.0
 regex==2020.7.14
+xgboost==0.90
+wordcloud==1.7.0
+sklearn==0.0
