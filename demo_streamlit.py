@@ -3,11 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle 
+import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 import wordninja
 import re
 from nltk.stem import PorterStemmer
 porter=PorterStemmer()
+
 
 st.title('Detect phishing emails')
 
