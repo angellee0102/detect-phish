@@ -63,7 +63,7 @@ def oneTextTotfidf(input_content,tfidf_transformer):
     segmented=listToString(wordninja.split(remove_urls(input_content)))
     # and stemmed
     stemmed=stemSentence(segmented)
-    count_vector=cv.transform([input_content])
+    count_vector=cv.transform([stemmed])
     tf_idf_vector=tfidf_transformer.transform(count_vector)
     df_tf_idf_vector=pd.DataFrame(tf_idf_vector.toarray())
     return df_tf_idf_vector
@@ -72,11 +72,6 @@ def oneTextTotfidf(input_content,tfidf_transformer):
 loaded_model = pickle.load(open('stemmed_tfidf_xgboost_model_0913.sav', 'rb'))
 loaded_transformer = pickle.load(open('stemmed_tfidf_transformer.sav', 'rb'))
 cv=pickle.load(open('cv.sav','rb'))
-
-text='hello there how have you been lately i really hope you are having fun and healthy'
-
-
-
 
 inputContent = st.text_input('Email Content:', 'type here')
 st.write('The email content is: "', inputContent,'"')
