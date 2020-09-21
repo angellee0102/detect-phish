@@ -67,14 +67,20 @@ def oneTextTotfidf(input_content,tfidf_transformer):
     tf_idf_vector=tfidf_transformer.transform(count_vector)
     df_tf_idf_vector=pd.DataFrame(tf_idf_vector.toarray())
     return df_tf_idf_vector
-
+def countWordsInput(input_content):
+     return len(input_content.split())
 # tfidf model
 loaded_model = pickle.load(open('stemmed_tfidf_xgboost_model_0913.sav', 'rb'))
 loaded_transformer = pickle.load(open('stemmed_tfidf_transformer.sav', 'rb'))
 cv=pickle.load(open('cv.sav','rb'))
 
-inputContent = st.text_input('Email Content:', 'type here')
+inputSender = st.text_input('Email Sender:', '')
+st.write('The sender is: "', inputSender,'"')
+
+inputContent = st.text_input('Email Content:', 'type here (ex. hello there this is a nice day )')
 st.write('The email content is: "', inputContent,'"')
+st.write('word count: ',countWordsInput(inputContent))
+
 X_test_1=oneTextTotfidf(inputContent,loaded_transformer)
 result=loaded_model.predict(X_test_1)[0]
 if result ==0:
@@ -82,5 +88,3 @@ if result ==0:
 if result ==1:
     st.write('Prediction: PHISH')
     
-
-st.write("i'm the best ahahah")
