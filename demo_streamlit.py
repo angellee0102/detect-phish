@@ -13,6 +13,15 @@ porter=PorterStemmer()
 
 st.title('Detect phishing emails')
 
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
+local_css("style.css")
+
+
+intro='<div>Hi! This is a Phishing-email Detection app, please input the sender and/or the content of any email to check whether it is phish or not!</div>'
+st.markdown(intro, unsafe_allow_html=True)
 # DATE_COLUMN = 'date/time'
 # DATA_URL = ('/Users/lee/Documents/Documents/nctu2020/專題/content_20200906.csv')
 
@@ -73,18 +82,44 @@ def countWordsInput(input_content):
 loaded_model = pickle.load(open('stemmed_tfidf_xgboost_model_0913.sav', 'rb'))
 loaded_transformer = pickle.load(open('stemmed_tfidf_transformer.sav', 'rb'))
 cv=pickle.load(open('cv.sav','rb'))
+phish_domains_arr=pickle.load(open('phish_domains.sav','rb'))
 
-inputSender = st.text_input('Email Sender:', '')
-st.write('The sender is: "', inputSender,'"')
+def is_domain_phish(domain):
+    return (domain in phish_domains_arr)
 
-inputContent = st.text_input('Email Content:', 'type here (ex. hello there this is a nice day )')
-st.write('The email content is: "', inputContent,'"')
+def checkDomain(sender):
+    if "@" in sender:
+        domain=sender.split("@",1)[1]
+        if is_domain_phish(domain) is True:
+            return "<div>This domain is <span class='highlight red'>DANGEROUS</span></div>"
+        else:
+            return "<div>This domain is not included in the phishing list<div>"
+    else:
+        return "<div>Please input a valid email address<div>"
+def checkContent(inputContent):
+    if len(inputContent) < 1:
+        return "<div>Please input a content</div>"
+    else:
+        X_test_1=oneTextTotfidf(inputContent,loaded_transformer)
+        result=loaded_model.predict(X_test_1)[0]
+        if result ==0:
+            return "<div>This content is likely <span class='highlight blue'>NON-PHISH</span></div>"
+        if result ==1:
+            return "<div>This content is likely <span class='highlight red'>PHISH</span></div>"
+st.write(' ')
+
+inputSender = st.text_input('Sender Email :', '')
+# st.write(checkDomain(inputSender))
+st.markdown(checkDomain(inputSender), unsafe_allow_html=True)
+st.write(' ')
+st.write(' ')
+inputContent = st.text_input('Email Content:', '')
 st.write('word count: ',countWordsInput(inputContent))
+st.markdown(checkContent(inputContent), unsafe_allow_html=True)
+st.markdown('<style>p{color: darkblue;}</style>', unsafe_allow_html=True)
 
-X_test_1=oneTextTotfidf(inputContent,loaded_transformer)
-result=loaded_model.predict(X_test_1)[0]
-if result ==0:
-    st.write('Prediction: Not phish')
-if result ==1:
-    st.write('Prediction: PHISH')
-    
+
+
+t = "<div>Hello there this app was made <span class='highlight blue'>name <span class='bold'>yo</span> </span> is <span class='highlight red'>Fanilo <span class='bold'>Name</span></span></div>"
+
+st.write('Feel free to star! https://github.com/angellee0102/detect-phish')
